@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { getUserMedia } from "@mux/spaces-web";
 import useVideoContext from "../../hooks/useVideoContext";
 import useParticipant from "../../hooks/useParticipant";
@@ -9,7 +8,6 @@ import styles from './styles.module.css'
 
 export default function MainScreen() {
     const [localParticipant, setLocalParticipant] = useState(null);
-    const { URLRoomName } = useParams();
     const { participants } = useParticipant()
     const { room } = useVideoContext();
 
@@ -37,7 +35,7 @@ export default function MainScreen() {
 
     return(
         <div>
-          <h4 className={styles.roomTitle}>Space: {URLRoomName}</h4>
+          <h4 className={styles.roomTitle}>Space: {window.location.pathname.split('/').pop()}</h4>
             <div className={styles.gridContainer}>
               {localParticipant && (
                   <Participant

@@ -42,7 +42,6 @@ const Participant = ({ participant }) => {
     };
   }, [participant, attachTrack, detachTrack]);
 
-  console.log("participant", participant)
   return (
     <div className={styles.container}>
       <h2  className={styles.name}>{participant.displayName}</h2>
