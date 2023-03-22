@@ -1,0 +1,25 @@
+#googleButton {
+    background: white;
+    color: rgb(0, 94, 166);
+    border-radius: 4px;
+    border: 2px solid rgb(2, 122, 197);
+    margin: 1.8em 0 0.7em;
+    text-transform: none;
+    box-shadow: none;
+    padding: 0.3em 1em;
+}
+
+.errorMessage {
+    color: red;
+    display: flex;
+    align-items: center;
+    margin: 1em 0 0.2em;
+}
+
+.gutterBottom {
+    margin-bottom: 1em;
+}
+
+.passcodeContainer {
+    min-height: 120px;
+}

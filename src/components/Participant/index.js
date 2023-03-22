@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
-import {
-  LocalParticipant,
-  ParticipantEvent,
-  TrackSource,
-} from "@mux/spaces-web";
+import { LocalParticipant, ParticipantEvent, TrackSource,} from "@mux/spaces-web";
+import styles from './styles.module.css';
 
 const Participant = ({ participant }) => {
   const mediaEl = useRef(null);
@@ -45,15 +42,16 @@ const Participant = ({ participant }) => {
     };
   }, [participant, attachTrack, detachTrack]);
 
+  console.log("participant", participant)
   return (
-    <div>
-      <h2>{participant.connectionId}</h2>
+    <div className={styles.container}>
+      <h2  className={styles.name}>{participant.displayName}</h2>
       <video
         ref={mediaEl}
         autoPlay
         playsInline
         muted={isLocal}
-        style={{ width: "400px", height: "225px" }}
+        className={styles.video}
       />
     </div>
   );

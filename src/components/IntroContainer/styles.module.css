@@ -1,0 +1,52 @@
+.background {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding-top: 72px;
+}
+
+.container {
+    position: relative;
+    flex: 1;
+}
+
+.innerContainer {
+    display: flex;
+    width: 888px;
+    height: 379px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px 0px rgba(40, 42, 43, 0.3);
+    overflow: hidden;
+    position: relative;
+    margin: auto;
+}
+
+.swooshContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: green;
+    background-size: cover;
+    width: 296px;
+}
+
+.logoContainer {
+    position: absolute;
+    width: 210px;
+    text-align: center;
+}
+
+.content {
+    background: white;
+    width: 100%;
+    flex: 1;
+    padding: 2em;
+}
+
+
+.title {
+    color: white;
+    margin: 1em 0 0;
+}

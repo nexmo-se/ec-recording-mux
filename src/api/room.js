@@ -1,5 +1,5 @@
-import Room from "../entities/room";
-const apiUrl = process.env.REACT_BACKEND_URL || window.location.href
+import MuxCredential from "../entities/MuxCredential";
+const apiUrl = process.env.REACT_APP_BACKEND_URL || window.location.href
 
 export default class RoomAPI{
 
@@ -11,34 +11,29 @@ export default class RoomAPI{
       })
       if(response.ok){
         const jsonResponse = await response.json();
-        console.log("json response ", jsonResponse)
-        const room = new Room(jsonResponse.spaceId, jsonResponse.spaceToken, jsonResponse.broadcastId);
-        return room;  
+        const credential = new MuxCredential(jsonResponse.name, jsonResponse.spaceId, jsonResponse.spaceToken, jsonResponse.broadcastId);
+        return credential;  
       }else throw new Error(response.statusText);
     }
 
-    static async startBroadcast(room) {
-      const response = await fetch(`${apiUrl}startBroadcast`, {
+    static async startMuxBroadcast(room) {
+      const response = await fetch(`${apiUrl}startMuxBroadcast`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ broadcastId: room.broadcastId, spaceId: room.spaceId })
       })
       if(response.ok){
-        // const jsonResponse = await response.json();
-        // console.log("json response ", jsonResponse)
         return;  
       }else throw new Error(response.statusText);
     }
 
-    static async stopBroadcast(room) {
-      const response = await fetch(`${apiUrl}stopBroadcast`, {
+    static async stopMuxBroadcast(room) {
+      const response = await fetch(`${apiUrl}stopMuxBroadcast`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ broadcastId: room.broadcastId, spaceId: room.spaceId })
       })
       if(response.ok){
-        // const jsonResponse = await response.json();
-        // console.log("json response ", jsonResponse)
         return;  
       }else throw new Error(response.statusText);
     }

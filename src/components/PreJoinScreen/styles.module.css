@@ -1,0 +1,13 @@
+.gutterBottom {
+    margin-bottom: 1em;
+}
+
+.inputContainer {
+    display: flex;
+    justify-content: space-between;
+    margin: 1.5em 0 3.5em;
+}
+
+.textFieldContainer {
+    width: '100%'
+}

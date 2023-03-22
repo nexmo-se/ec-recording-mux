@@ -1,114 +1,46 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Space, SpaceEvent, getUserMedia } from "@mux/spaces-web";
-import RoomAPI from "./api/room";
 
-import Participant from "./Participant";
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import AppStateProvider from './state';
+import { VideoProvider } from './components/VideoProvider';
+import ErrorDialog from './components/ErrorDialog';
+import LoginPage from './pages/LoginPage';
+import MainPage from './pages/MainPage';
+import { useAppState } from './state';
 import "./App.css";
+import { useEffect } from 'react';
 
+const VideoApp = () => {
+  const { error, setError } = useAppState();
+  const { isAuthReady, user } = useAppState();
+  const navigate = useNavigate()
 
-function App() {
-  const spaceRef = useRef(null);
-  const [localParticipant, setLocalParticipant] = useState(null);
-  const [participants, setParticipants] = useState([]);
-  const [room, setRoom] = useState(null);
-
-  const joined = !!localParticipant;
-
-  const addParticipant = useCallback(
-    (participant) => {
-      setParticipants((currentParticipants) => [
-        ...currentParticipants,
-        participant,
-      ]);
-    },
-    [setParticipants]
-  );
-
-  const removeParticipant = useCallback(
-    (participantLeaving) => {
-      setParticipants((currentParticipants) =>
-        currentParticipants.filter(
-          (currentParticipant) =>
-            currentParticipant.connectionId !== participantLeaving.connectionId
-        )
-      );
-    },
-    [setParticipants]
-  );
-
-  useEffect(async () => {
-    const roomName = 'test'
-    const room = await RoomAPI.initialize(roomName);
-    setRoom(room)
-    const space = new Space(room.spaceToken);
-
-    space.on(SpaceEvent.ParticipantJoined, addParticipant);
-    space.on(SpaceEvent.ParticipantLeft, removeParticipant);
-
-    spaceRef.current = space;
-
-    return () => {
-      space.off(SpaceEvent.ParticipantJoined, addParticipant);
-      space.off(SpaceEvent.ParticipantLeft, removeParticipant);
-    };
-  }, [addParticipant, removeParticipant]);
-
-  const join = useCallback(async () => {
-    // Join the Space
-    let localParticipant = await spaceRef.current.join();
-
-    // Get and publish our local tracks
-    let localTracks = await getUserMedia({
-      audio: true,
-      video: true,
-    });
-    await localParticipant.publishTracks(localTracks);
-
-    // Set the local participant so it will be rendered
-    setLocalParticipant(localParticipant);
-  }, []);
-
-  function startBroadcast() {
-    RoomAPI.startBroadcast(room);
-
-  }
-
-  function stopBroadcast() {
-    RoomAPI.stopBroadcast(room);
-  }
-
+  useEffect(() => {
+    if (!user || !isAuthReady) {
+       navigate('/login');
+    }
+  }, [isAuthReady, user, navigate])
 
   return (
-    <div className="App">
-      <button onClick={join} disabled={joined}>
-        Join Space
-      </button>
-
-      <button onClick={startBroadcast} >
-        Start broadcast
-      </button>
-
-      <button onClick={stopBroadcast} >
-        Stop broadcast
-      </button>
-
-      {localParticipant && (
-        <Participant
-          key={localParticipant.connectionId}
-          participant={localParticipant}
-        />
-      )}
-
-      {participants.map((participant) => {
-        return (
-          <Participant
-            key={participant.connectionId}
-            participant={participant}
-          />
-        );
-      })}
-    </div>
+    <VideoProvider onError={setError}>
+      <ErrorDialog dismissError={() => setError(null)} error={error} />
+          <MainPage />
+    </VideoProvider>
   );
+};
+
+function App() {
+  return (
+    <AppStateProvider>
+      <Routes>
+        <Route exact path="/" element={<VideoApp />}>
+        </Route>
+        <Route path="/room/:URLRoomName" element={<VideoApp />}>
+        </Route>
+        <Route path="/login" element={<LoginPage />}>
+        </Route>
+      </Routes>
+    </AppStateProvider>
+  )
 }
 
 export default App;
