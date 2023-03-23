@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signInAnonymously } from 'firebase/auth';
+import MuxCredential from '../../entities/MuxCredential'
+
+const apiUrl = process.env.REACT_APP_BACKEND_URL || ''
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -17,11 +20,12 @@ export default function useFirebaseAuth() {
   const [isAuthReady, setIsAuthReady] = useState(false);
   const searchParams = new URLSearchParams(document.location.search);
   const [isFetching, setIsFetching] = useState(false);
+  const [muxInit, setMuxInit] = useState(null)
 
   const role = searchParams.get('role');
 
-  const getToken = useCallback(
-    async (user_identity, room_name) => {
+  const initialize = useCallback(
+    async (roomName) => {
       setIsFetching(true)
 
       const headers = new window.Headers();
@@ -30,18 +34,21 @@ export default function useFirebaseAuth() {
       headers.set('Authorization', idToken);
       headers.set('content-type', 'application/json');
 
-      const endpoint = process.env.REACT_APP_TOKEN_ENDPOINT || '/token';
+      const endpoint = `${apiUrl}initialize`;
 
       return fetch(endpoint, {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          user_identity,
-          room_name,
-          create_conversation: process.env.REACT_APP_DISABLE_TWILIO_CONVERSATIONS !== 'true',
+          roomName,
         }),
-      }).then(res => {
-        res.json()
+      }).then(async(response) => {
+        if(response.ok){
+          const jsonResponse = await response.json();
+          const credential = new MuxCredential(jsonResponse.name, jsonResponse.spaceId, jsonResponse.spaceToken, jsonResponse.broadcastId);
+          setMuxInit(credential)
+          return credential;  
+        }else throw new Error(response.statusText);
       }).catch((err) => {
         console.err(err)
       }).finally(()=> {
@@ -52,7 +59,7 @@ export default function useFirebaseAuth() {
   );
 
   const getVonageCredential = useCallback(
-    async (room_name) => {
+    async (roomName) => {
       setIsFetching(true)
 
       const headers = new window.Headers();
@@ -61,13 +68,13 @@ export default function useFirebaseAuth() {
       headers.set('Authorization', idToken);
       headers.set('content-type', 'application/json');
 
-      const endpoint = process.env.REACT_APP_VONAGE_CREDENTIAL_ENDPOINT || '/vonageCredential';
+      const endpoint = `${apiUrl}vonageCredential`;
 
       return fetch(endpoint, {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          room_name,
+          roomName,
         }),
       }).then(res => {
         res.json()
@@ -79,6 +86,65 @@ export default function useFirebaseAuth() {
     },
     [user]
   );
+
+  const startRecording = useCallback(
+    async () => {
+      setIsFetching(true)
+
+      const headers = new window.Headers();
+
+      const idToken = await user.getIdToken();
+      headers.set('Authorization', idToken);
+      headers.set('content-type', 'application/json');
+
+      const endpoint = `${apiUrl}startRecording`;
+
+      return fetch(endpoint, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ broadcastId: muxInit.broadcastId, spaceId: muxInit.spaceId })
+      }).then(response => {
+        if(response.ok){
+          return;  
+        }else throw new Error(response.statusText);
+      }).catch((err) => {
+        console.err(err)
+      }).finally(()=> {
+        setIsFetching(false)
+      })
+    },
+    [user, muxInit]
+  );
+
+  const stopRecording = useCallback(
+    async () => {
+      setIsFetching(true)
+
+      const headers = new window.Headers();
+
+      const idToken = await user.getIdToken();
+      headers.set('Authorization', idToken);
+      headers.set('content-type', 'application/json');
+
+      const endpoint = `${apiUrl}stopRecording`;
+
+      return fetch(endpoint, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ broadcastId: muxInit.broadcastId, spaceId: muxInit.spaceId })
+      }).then(response => {
+        if(response.ok){
+          return;  
+        }else throw new Error(response.statusText);
+      }).catch((err) => {
+        console.err(err)
+      }).finally(()=> {
+        setIsFetching(false)
+      })
+    },
+    [user, muxInit]
+  );
+
 
   const startEcRecording = useCallback(
     async (sessionId, url) => {
@@ -206,5 +272,5 @@ export default function useFirebaseAuth() {
       });
   }, []);
 
-  return { user, signIn, signOut, isAuthReady, isFetching, getToken, getVonageCredential, startEcRecording, stopEcRecording, getVonageRecord };
+  return { user, signIn, signOut, isAuthReady, isFetching, initialize, startRecording, stopRecording, getVonageCredential, startEcRecording, stopEcRecording, getVonageRecord };
 }

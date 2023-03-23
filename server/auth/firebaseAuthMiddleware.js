@@ -16,7 +16,7 @@ const firebaseAuthMiddleware = async (req, res, next) => {
   try {
     // Here we authenticate users be verifying the ID token that was sent
     const token = await firebaseAdmin.auth().verifyIdToken(authHeader);
-    
+  
     // if (token.email && /@vonage.com$/.test(token.email) || req.body.user_identity === process.env.REACT_APP_EC_NAME) {
     if (token.email || req.body.user_identity === process.env.REACT_APP_EC_NAME) {
       next();

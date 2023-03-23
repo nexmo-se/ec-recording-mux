@@ -10,25 +10,52 @@ app.use(cors())
 
 app.use(express.static(path.join(__dirname, 'build')));
 
-const PORT = process.env.PORT || 3002;
+const webSocketServerPort = process.env.PORT || 3002;
+const webSocketServer = require('websocket').server;
+const http = require('http');
 
-const noopMiddleware = (_, __, next) => next();
-const firebaseAuthMiddleware =
-  process.env.REACT_APP_SET_AUTH === 'firebase' ? require('./auth/firebaseAuthMiddleware') : noopMiddleware;
-const muxWebhookAuthMiddleware = require('./auth/muxWebhookAuthMiddleware.js')
+const firebaseAuthMiddleware = require('./auth/firebaseAuthMiddleware')
+const muxWebhookAuthMiddleware = require('./auth/muxWebhookAuthMiddleware.js');
+
+let clients = {};
+
+const updateClients = function(req, res, next) {
+  req.body.clients = clients;
+  next();
+}
+
+const server = http.createServer(app);
+const wsServer = new webSocketServer({
+  httpServer: server
+})
+
+wsServer.on('request', function(request) {
+  console.log(`${(new Date())} received a new connection from ${request.origin}`)
+
+  const room = request.resourceURL.query.room
+  // Acccept all request, can set to accept only specific origin
+  if (!room) return;
+  const connection = request.accept(null, request.origin)
+  if(clients[room]) {
+    clients[room].push(connection) 
+  }
+  else {
+    clients[room] = [connection]
+  }
+})
 
 app.get('/', (req, res) => {
     res.sendFile('index.html');
 })
 
-// TODO: authenticate
 app.post('/initialize', firebaseAuthMiddleware, RoomListener.initialize)
 
-app.post('/startMuxBroadcast', firebaseAuthMiddleware, RoomListener.startMuxBroadcast)
+app.post('/startRecording', firebaseAuthMiddleware, RoomListener.startMuxBroadcast)
 
-app.post('/stopMuxBroadcast', firebaseAuthMiddleware, RoomListener.startMuxBroadcast) 
+app.post('/stopRecording', firebaseAuthMiddleware, RoomListener.stopMuxBroadcast) 
 
-app.post('/muxEvent', muxWebhookAuthMiddleware, RoomListener.muxEvent)
+app.post('/muxEvent', muxWebhookAuthMiddleware, updateClients, RoomListener.muxEvent)
 
-
-app.listen(PORT, () =>  console.log(`Listening to port ${PORT}`))
+server.listen(webSocketServerPort, () => {
+    console.log('server started on port', webSocketServerPort);
+});

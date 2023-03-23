@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { getUserMedia } from "@mux/spaces-web";
 import useVideoContext from "../../hooks/useVideoContext";
-import useParticipant from "../../hooks/useParticipant";
 import Participant from "../Participant"
 import MenuBar from "../MenuBar";
 import styles from './styles.module.css'
+import { Tooltip, Typography } from "@mui/material";
+import useWebsocket from "../../hooks/useWebsocket";
 
 export default function MainScreen() {
     const [localParticipant, setLocalParticipant] = useState(null);
-    const { participants } = useParticipant()
-    const { room } = useVideoContext();
+    const { room, participants, isRecording } = useVideoContext();
+    const { initialize: initializeWebsocket, recordedUrl } = useWebsocket()
+    const roomName = window.location.pathname.split('/').pop()
 
     const join = useCallback(async () => {
       // Join the Space
@@ -30,12 +32,13 @@ export default function MainScreen() {
     useEffect(() => {
       if (room) {
         join()
+        initializeWebsocket(roomName)
       }
     }, [room, join])
 
     return(
         <div>
-          <h4 className={styles.roomTitle}>Space: {window.location.pathname.split('/').pop()}</h4>
+          <h4 className={styles.roomTitle}>Space: {roomName}</h4>
             <div className={styles.gridContainer}>
               {localParticipant && (
                   <Participant
@@ -53,7 +56,22 @@ export default function MainScreen() {
                   );
               })}
             </div>
-            <MenuBar></MenuBar>
+            {isRecording && (
+              <Tooltip
+                title="All participants' audio and video is currently being recorded. Visit the app settings to stop recording."
+                placement="top"
+              >
+                <div className={styles.recordingIndicator}>
+                  <div className={styles.circle}></div>
+                  <Typography variant="body1" color="inherit" data-cy-recording-indicator>
+                    Recording
+                  </Typography>
+                </div>
+              </Tooltip>
+            )}
+            <MenuBar
+              recordedUrl={recordedUrl}
+            ></MenuBar>
         </div>
     )
 }

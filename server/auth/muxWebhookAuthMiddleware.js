@@ -1,17 +1,20 @@
+const Mux = require('@mux/mux-node');
+const { Webhooks } = Mux;
+const webhookSecret = process.env.MUX_WEBHOOK_SECRET;
+
 
 const muxWebhookAuthMiddleware = async (req, res, next) => {
     try {
         const sig = req.headers['mux-signature'];
-        // will raise an exception if the signature is invalid
         const isValidSignature = Webhooks.verifyHeader(
-          req.body,
+          JSON.stringify(req.body),
           sig,
           webhookSecret
         );
-        console.log('Success:', isValidSignature);
         next()
       } catch (err) {
         // On error, return the error message
+        console.log('Webhook Fail:', err);
         return res.status(400).send(`Webhook Error: ${err.message}`);
       }
 };

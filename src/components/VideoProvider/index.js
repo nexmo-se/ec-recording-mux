@@ -13,7 +13,7 @@ export function VideoProvider({children, onError = () => {} }) {
     [onError]
   );
 
-  const { room, isConnecting, connect } = useRoom(onErrorCallback);
+  const { room, isConnecting, connect, participants, isRecording } = useRoom(onErrorCallback);
 
   return (
     <VideoContext.Provider
@@ -22,6 +22,8 @@ export function VideoProvider({children, onError = () => {} }) {
         isConnecting,
         onError: onErrorCallback,
         connect,
+        participants,
+        isRecording
       }}
     >
         {children}

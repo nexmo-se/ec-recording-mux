@@ -4,7 +4,7 @@ import { Typography, InputLabel, TextField, Grid, Button } from "@mui/material";
 import styles from './styles.module.css'
 
 export default function PreJoinScreen({name, setName, roomName, setRoomName, handleSubmit}) {
-  const { user } = useAppState();
+  const { user, isFetching } = useAppState();
 
     const handleNameChange = (event) => {
         setName(event.target.value);
@@ -61,7 +61,7 @@ export default function PreJoinScreen({name, setName, roomName, setRoomName, han
                     variant="contained"
                     type="submit"
                     color="primary"
-                    disabled={!name || !roomName}
+                    disabled={!name || !roomName || isFetching}
                 >
                     Continue
                 </Button>

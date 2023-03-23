@@ -20,3 +20,36 @@
     text-align: center;
     padding: 0;
 }
+
+.recordingIndicator {
+    position: absolute;
+    top: 48px;
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 0.1em 0.3em 0.1em 0;
+    font-size: 1.2rem;
+    height: 28px;
+}
+
+.circle {
+    height: 12px;
+    width: 12px;
+    background: red;
+    border-radius: 100%;
+    margin: 0 0.6em;
+    animation: 1.25s pulsate ease-out infinite;
+}
+
+@keyframes pulsate {
+    0% {
+      background: #A90000
+    }
+    50% {
+      background: #f00
+    }
+    100% {
+      background: '#A90000'
+    }
+}
