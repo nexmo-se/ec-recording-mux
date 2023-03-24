@@ -30,6 +30,7 @@ export default function RecordingNotification({openNotification, setOpenNotifica
             onClose={handleClose}
             message={message}
             action={action}
+            anchorOrigin={{ vertical:'top', horizontal: 'right' }}
           />
         </div>
       );

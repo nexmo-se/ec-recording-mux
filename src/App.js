@@ -1,5 +1,5 @@
 
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import AppStateProvider from './state';
 import { VideoProvider } from './components/VideoProvider';
 import ErrorDialog from './components/ErrorDialog';
@@ -12,11 +12,15 @@ import { useEffect } from 'react';
 const VideoApp = () => {
   const { error, setError } = useAppState();
   const { isAuthReady, user } = useAppState();
-  const navigate = useNavigate()
+  const location = useLocation();
+  const navigate = useNavigate();
+  const searchParams = new URLSearchParams(document.location.search);
+  const role = searchParams.get('role');
 
   useEffect(() => {
     if (!user || !isAuthReady) {
-       navigate('/login');
+      const loginUrl = `/login${role === process.env.REACT_APP_EC_NAME ? window.location.search : ''}`
+      navigate(loginUrl, { state: { from: location } });
     }
   }, [isAuthReady, user, navigate])
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useAppState } from "../../state";
 import useVideoContext from "../../hooks/useVideoContext";
 import styles from './styles.module.css'
@@ -10,8 +10,8 @@ import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined
 import RecordingNotification from "../RecordingNotification";
 
 export default function MenuBar({recordedUrl}) {
-    const { isRecording } = useVideoContext();
-    const {signOut, startRecording, stopRecording, isFetching } = useAppState();
+    const { isRecording, isEcRecording } = useVideoContext();
+    const {signOut, startRecording, stopRecording, startEcRecording, stopEcRecording, isFetching } = useAppState();
     const [anchorEl, setAnchorEl] = useState(null);
     const [openNotification, setOpenNotification] = useState(false)
     const [notificationMessage, setNotificationMessage] = useState('')
@@ -38,12 +38,27 @@ export default function MenuBar({recordedUrl}) {
         }
         else {
             startRecording();
-            setNotificationMessage('Recording Start')
+            setNotificationMessage('Recording Started')
             setOpenNotification(true)
         }
         handleClose();
 
     }, [isRecording, startRecording, stopRecording])
+
+    const ecRecording = useCallback(async () => {
+        if (isEcRecording) {
+            stopEcRecording();
+            setNotificationMessage('Ec Recording Stopped')
+            setOpenNotification(true)
+        }
+        else {
+            startEcRecording();
+            setNotificationMessage('Ec Recording Started')
+            setOpenNotification(true)
+        }
+        handleClose();
+
+    }, [isEcRecording, startEcRecording, stopEcRecording])
 
 
     function downloadRecord(url) {
@@ -84,18 +99,23 @@ export default function MenuBar({recordedUrl}) {
                 'aria-labelledby': 'basic-button',
                 }}>
                 <MenuList>
-                    <MenuItem onClick={muxRecording} disabled={isFetching}>
-                        <ListItemIcon>
-                            {isRecording ? <StopRecordingIcon/> : <StartRecordingIcon />}
-                        </ListItemIcon>
-                        <ListItemText>{isRecording ? 'Stop' : 'Start'} Recording</ListItemText>
-                    </MenuItem>
-                    <MenuItem onClick={handleClose} disabled={isFetching}>
-                        <ListItemIcon>
-                            <StartRecordingIcon />
-                        </ListItemIcon>
-                        <ListItemText>{isRecording ? 'Stop' : 'Start'} EC Recording</ListItemText>
-                    </MenuItem>
+                    { !isEcRecording && (
+                        <MenuItem onClick={muxRecording} disabled={isFetching}>
+                            <ListItemIcon>
+                                {isRecording ? <StopRecordingIcon/> : <StartRecordingIcon />}
+                            </ListItemIcon>
+                            <ListItemText>{isRecording ? 'Stop' : 'Start'} Recording</ListItemText>
+                        </MenuItem>
+                    )}
+                    { !isRecording && (
+                        <MenuItem onClick={ecRecording} disabled={isFetching}>
+                            <ListItemIcon>
+                                <StartRecordingIcon />
+                            </ListItemIcon>
+                            <ListItemText>{isEcRecording ? 'Stop' : 'Start'} EC Recording</ListItemText>
+                        </MenuItem>
+                        )
+                    }
                     {recordedUrl && (
                         <MenuItem onClick={() => downloadRecord(recordedUrl)} disabled={isFetching}>
                             <ListItemIcon>

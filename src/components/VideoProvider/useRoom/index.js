@@ -1,12 +1,18 @@
 import { Space, SpaceEvent } from "@mux/spaces-web";
+import OT from '@opentok/client';
 import { useState, useEffect, useCallback } from "react";
 import { useAppState } from "../../../state";
 
 export default function useRoom(onError) {
     const [ room, setRoom] = useState(null);
     const [ isConnecting, setIsConnecting] = useState(false);
+    const [ isVonageConnecting, setIsVonageConnecting] = useState(false);
     const [ participants, setParticipants] = useState([])
     const [ isRecording, setIsRecording ] = useState(false)
+    const [ vonageSession, setVonageSession] = useState(null)
+    const [ isEcRecording, setIsEcRecording ] = useState(false)
+    const [ isVonageVideoAvailable, setIsVonageVideoAvailable ] = useState(false)
+
 
     const { user } = useAppState()
 
@@ -20,8 +26,23 @@ export default function useRoom(onError) {
       [user]
     );
 
+    const vonageConnect = (apiKey, sessionId, token) => {
+      setIsVonageConnecting(true);
+      var session = OT.initSession(apiKey, sessionId);
+      session.connect(token, function(error) {
+        if (error) {
+          console.log('Error connecting: ', error.name, error.message);
+        } else {
+          console.log('Connected to vonage session.');
+          setVonageSession(session);
+        }
+        setIsVonageConnecting(false);
+      });
+    };
+
     const addParticipant = useCallback(
       (participant) => {
+        if (!participant.displayName) return;
         setParticipants((currentParticipants) => [
           ...currentParticipants,
           participant,
@@ -65,6 +86,39 @@ export default function useRoom(onError) {
     }, [room, addParticipant, removeParticipant, updateRecordingState])
 
 
+    const handleEcRecordingStarted = useCallback(() => {
+
+      setIsEcRecording(true)
+    }, [setIsEcRecording])
+
+    const handleEcRecordingStopped = useCallback(() => {
+      setIsEcRecording(false)
+      setIsVonageVideoAvailable(true)
+    }, [setIsEcRecording, setIsVonageVideoAvailable])
+
+    useEffect(() => {
+      if (vonageSession) {
+        vonageSession.on('archiveStarted', handleEcRecordingStarted);
+        vonageSession.on('archiveStopped', handleEcRecordingStopped);
   
-    return { room, isConnecting, connect, participants, isRecording };
+        return () => {
+          vonageSession.off('archiveStarted', handleEcRecordingStarted);
+          vonageSession.off('archiveStopped', handleEcRecordingStopped);
+        };
+      }
+    }, [vonageSession, handleEcRecordingStarted, handleEcRecordingStopped]);
+
+
+  
+    return { 
+      room, 
+      isConnecting, 
+      connect, 
+      participants, 
+      isRecording, 
+      isVonageConnecting, 
+      vonageConnect,
+      vonageSession,
+      isEcRecording,
+      isVonageVideoAvailable };
   }

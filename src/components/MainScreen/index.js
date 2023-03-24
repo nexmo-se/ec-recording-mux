@@ -9,13 +9,19 @@ import useWebsocket from "../../hooks/useWebsocket";
 
 export default function MainScreen() {
     const [localParticipant, setLocalParticipant] = useState(null);
-    const { room, participants, isRecording } = useVideoContext();
+    const { room, participants, isRecording, isEcRecording } = useVideoContext();
     const { initialize: initializeWebsocket, recordedUrl } = useWebsocket()
+    const searchParams = new URLSearchParams(document.location.search);
+    const role = searchParams.get('role');
     const roomName = window.location.pathname.split('/').pop()
 
     const join = useCallback(async () => {
       // Join the Space
       let localParticipant = await room.join();
+
+      if (role === process.env.REACT_APP_EC_NAME) {
+        return;
+      }
        
       // Get and publish our local tracks
       let localTracks = await getUserMedia({
@@ -27,13 +33,14 @@ export default function MainScreen() {
 
       // Set the local participant so it will be rendered
       setLocalParticipant(localParticipant);
-   }, [room])
+   }, [room, role])
 
     useEffect(() => {
       if (room) {
         join()
         initializeWebsocket(roomName)
       }
+      // eslint-disable-next-line
     }, [room, join])
 
     return(
@@ -65,6 +72,19 @@ export default function MainScreen() {
                   <div className={styles.circle}></div>
                   <Typography variant="body1" color="inherit" data-cy-recording-indicator>
                     Recording
+                  </Typography>
+                </div>
+              </Tooltip>
+            )}
+            {isEcRecording && (
+              <Tooltip
+                title="All participants' audio and video is currently being recorded. Visit the app settings to stop recording."
+                placement="top"
+              >
+                <div className={styles.recordingIndicator}>
+                  <div className={styles.circle}></div>
+                  <Typography variant="body1" color="inherit" data-cy-recording-indicator>
+                    Ec Recording
                   </Typography>
                 </div>
               </Tooltip>

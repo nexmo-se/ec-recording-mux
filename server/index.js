@@ -56,6 +56,12 @@ app.post('/stopRecording', firebaseAuthMiddleware, RoomListener.stopMuxBroadcast
 
 app.post('/muxEvent', muxWebhookAuthMiddleware, updateClients, RoomListener.muxEvent)
 
+
+// Vonage
+app.post('/ecStartRecording', firebaseAuthMiddleware, RoomListener.startEcRecording)
+
+app.post('/ecStopRecording', firebaseAuthMiddleware, RoomListener.stopEcRecording) 
+
 server.listen(webSocketServerPort, () => {
     console.log('server started on port', webSocketServerPort);
 });

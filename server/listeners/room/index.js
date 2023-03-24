@@ -1,7 +1,9 @@
 const MuxAPI = require("../../api/mux")
+const VonageAPI = require("../../api/vonage")
 
 let spaces = {}
 let broadcasts = {}
+let vonageSessions = {}
 
 class RoomListener{
     static async initialize(req, res) {
@@ -19,10 +21,24 @@ class RoomListener{
                 broadcasts[roomName] = broadcast
             }
             
-            res.json({name: roomName, spaceId: spaces[roomName].id, spaceToken, broadcastId: broadcasts[roomName].id})
+            if (!vonageSessions[roomName]) {
+                const session =  await VonageAPI.createVonageSession()
+                vonageSessions[roomName] = session
+            }
+            const vonageToken = await VonageAPI.generateVonageJwt(vonageSessions[roomName].sessionId)
+
+            res.json({
+                name: roomName, 
+                spaceId: spaces[roomName].id, 
+                spaceToken, 
+                broadcastId: broadcasts[roomName].id,
+                vonageApikey: process.env.VONAGE_API_KEY,
+                vonageSessionId: vonageSessions[roomName].sessionId,
+                vonageToken
+            })
         }
         catch(e) {
-            console.log("initialize error", e.response.data.error)
+            console.log("initialize error", e)
             res.status(501).end()
         }
     }
@@ -93,6 +109,46 @@ class RoomListener{
             res.status(501).end()
         }
     }
+    static async startEcRecording(req, res) {
+        try {
+            const { sessionId, url } = req.body
+            console.log("sessionId: ",sessionId, "url:", url)
+
+            if (sessionId && url) {
+                // Did not use automatic archive here, to control when the stop archive, 
+                // automatic archive will only stop 60s after the last clients disconnect
+                const ecId = await VonageAPI.startEcRender(sessionId, url)
+                const archiveId = await VonageAPI.startArchive(sessionId) 
+            
+                res.json({ecId, archiveId})
+            }else {
+                res.status(500);
+            }
+          }catch(e) {
+            console.log("Error", e)
+            res.status(500).send({ message: e });
+          }
+    }
+
+    static async stopEcRecording(req, res) {
+        try {
+            const { ecId, archiveId } = req.body;
+            console.log("ecId: ",ecId, "archiveId:", archiveId)
+            if (ecId && archiveId) {
+                //stop archive
+                const archiveData = await VonageAPI.stopArchive(archiveId)
+                //stop ec
+                const ecData = await VonageAPI.deleteEcRender(ecId)
+                res.status(200).json({archiveData, ecData});
+            } else {
+                res.status(500);
+            }
+            } catch (e) {
+                console.log('error ', e)
+                res.status(500).send({ message: e });
+            }
+    }
+
 }
 
 module.exports = RoomListener;

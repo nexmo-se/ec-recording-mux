@@ -1,25 +1,39 @@
 import IntroContainer from '../../components/IntroContainer';
 import { Button, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppState } from '../../state';
 import { ReactComponent as GoogleLogo } from './google-logo.svg';
 import styles from './styles.module.css'
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 export default function LoginPage() {
     const { signIn, user, isAuthReady } = useAppState();
     const navigate = useNavigate();
+    const location = useLocation();
+    const searchParams = new URLSearchParams(document.location.search);
+    const role = searchParams.get('role');
 
-    const login = () => {
+    const login = useCallback(() => {
         signIn()
-    };
+    }, [signIn]);
 
     useEffect(() => {
-      if (user && isAuthReady) {
-        navigate('/');
-      }
-    }, [user, isAuthReady, navigate])
+        if (user) {
+            // Go back to previous url
+            navigate(location?.state?.from || { pathname: '/' })
+        }
+    }, [user, navigate])
 
+    useEffect(() => {
+        if (role === process.env.REACT_APP_EC_NAME) {
+          login()
+        }
+      }, [role, login])
+    
+
+    if (!isAuthReady || role === process.env.REACT_APP_EC_NAME) {
+        return null;
+    }
 
     return (
         <IntroContainer>

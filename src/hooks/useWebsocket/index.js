@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 const HOST = process.env.REACT_APP_WEBSOCKET || window.location.origin.replace(/^http/, 'ws')
 
 export default function useWebsocket() {

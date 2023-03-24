@@ -1,30 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import PreJoinScreen from "../../components/PreJoinScreen";
 import MainScreen from "../../components/MainScreen";
 import useVideoContext from "../../hooks/useVideoContext";
 import { useAppState } from "../../state";
 
 export default function MainPage() {
-    const { room, connect } = useVideoContext();
-    const { user, initialize } = useAppState();
-    const [name, setName] = useState(user?.displayName || '');
-    const [roomName, setRoomName] = useState('');
-    
+    const { room, connect, vonageConnect } = useVideoContext();
+    const { initialize, user, isAuthReady } = useAppState();
+    const [roomName, setRoomName] = useState(window.location.pathname.split('/').pop());
+    const searchParams = new URLSearchParams(document.location.search);
+    const role = searchParams.get('role');
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const credential = await initialize(roomName);
-        await connect(credential.spaceToken)
-        window.history.replaceState(null, '', window.encodeURI(`/room/${roomName}${window.location.search || ''}`));
-
+        connectRoom(user.displayName)
     };
+
+    const connectRoom = useCallback(async (username) => {
+      const credential = await initialize(username ,roomName);
+      await connect(credential.spaceToken)
+      await vonageConnect(credential.vonageApikey, credential.vonageSessionId, credential.vonageToken)
+      window.history.replaceState(null, '', window.encodeURI(`/room/${roomName}${window.location.search || ''}`));
+  
+    },[roomName, connect, vonageConnect, initialize])
+
+    useEffect(() => {
+      if (role === process.env.REACT_APP_EC_NAME && roomName && isAuthReady) {
+        connectRoom(role)
+      }
+    }, [role, roomName, isAuthReady]);
 
     return (
         <>
           {room === null ? (
             <PreJoinScreen
-                name={name}
                 roomName={roomName}
-                setName={setName}
                 setRoomName={setRoomName}
                 handleSubmit={handleSubmit}
              />

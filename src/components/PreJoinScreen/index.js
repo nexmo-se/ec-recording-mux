@@ -1,46 +1,39 @@
+import { useRef, useEffect } from "react";
 import IntroContainer from "../IntroContainer";
 import { useAppState } from "../../state";
 import { Typography, InputLabel, TextField, Grid, Button } from "@mui/material";
 import styles from './styles.module.css'
 
-export default function PreJoinScreen({name, setName, roomName, setRoomName, handleSubmit}) {
-  const { user, isFetching } = useAppState();
+export default function PreJoinScreen({roomName, setRoomName, handleSubmit}) {
+  const { isFetching } = useAppState();
+  const searchParams = new URLSearchParams(document.location.search);
+  const role = searchParams.get('role');
+  const formRef = useRef();
 
-    const handleNameChange = (event) => {
-        setName(event.target.value);
-      };
-    
     const handleRoomNameChange = (event) => {
-    setRoomName(event.target.value);
+        setRoomName(event.target.value);
     };
-    
+
+    useEffect(() => {
+        if (roomName) {
+            setRoomName(roomName);
+        }
+    }, [roomName, setRoomName]);
+
+    if (role === process.env.REACT_APP_EC_NAME) {
+        return null;
+    }
+
     return (
         <IntroContainer>
             <Typography variant="h5" className={styles.gutterBottom}>
                 Join a Room
             </Typography>
             <Typography variant="body1">
-                {user?.displayName
-                ? "Enter the name of a room you'd like to join."
-                : "Enter your name and the name of a room you'd like to join"}
+                Enter the name of a room you'd like to join.
             </Typography>
-            <form onSubmit={handleSubmit}>
+            <form ref={formRef} onSubmit={handleSubmit}>
                 <div className={styles.inputContainer}>
-                {!user?.displayName && (
-                    <div className={styles.textFieldContainer}>
-                    <InputLabel shrink htmlFor="input-user-name">
-                        Your Name
-                    </InputLabel>
-                    <TextField
-                        id="input-user-name"
-                        variant="outlined"
-                        fullWidth
-                        size="small"
-                        value={name}
-                        onChange={handleNameChange}
-                    />
-                    </div>
-                )}
                 <div className={styles.textFieldContainer}>
                     <InputLabel shrink htmlFor="input-room-name">
                     Room Name
@@ -61,7 +54,7 @@ export default function PreJoinScreen({name, setName, roomName, setRoomName, han
                     variant="contained"
                     type="submit"
                     color="primary"
-                    disabled={!name || !roomName || isFetching}
+                    disabled={!roomName || isFetching}
                 >
                     Continue
                 </Button>
