@@ -33,12 +33,12 @@ export default function MenuBar({recordedUrl}) {
     const muxRecording = useCallback(() => {
         if (isRecording) {
             stopRecording();
-            setNotificationMessage('Recording Stopped, You may download the recording from the Settings within 5 seconds.')
+            setNotificationMessage('Recording Stopped, You may download the record from the Settings in a few seconds.')
             setOpenNotification(true)
         }
         else {
             startRecording();
-            setNotificationMessage('Recording Started')
+            setNotificationMessage('Recording Request Submitted. You should see a recording indicator in a few seconds.')
             setOpenNotification(true)
         }
         handleClose();
@@ -48,12 +48,12 @@ export default function MenuBar({recordedUrl}) {
     const ecRecording = useCallback(async () => {
         if (isEcRecording) {
             stopEcRecording();
-            setNotificationMessage('Ec Recording Stopped, You may download the recording from the Settings within 5 seconds.')
+            setNotificationMessage('EC Recording Stopped, You may download the record from the Settings in a few seconds.')
             setOpenNotification(true)
         }
         else {
             startEcRecording();
-            setNotificationMessage('Ec Recording Started')
+            setNotificationMessage('EC Recording Request Submitted. You should see a EC recording indicator in a few seconds.')
             setOpenNotification(true)
         }
         handleClose();

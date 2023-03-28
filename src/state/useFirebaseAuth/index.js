@@ -91,8 +91,8 @@ export default function useFirebaseAuth() {
         console.log(err)
       }).finally(()=> {
         setTimeout(() => {
-          setIsFetching(false)
-        }, 5000);
+          setIsFetching(false) // broadcast takes 10s to start
+        }, 10000);
       })
     },
     [user, muxInit]
