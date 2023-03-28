@@ -64,19 +64,19 @@ app.use((req, res, next) => {
   // See: https://create-react-app.dev/docs/production-build/#static-file-caching
   if (req.path === '/' || req.path === 'index.html') {
     res.set('Cache-Control', 'no-cache');
-    res.sendFile(path.join(__dirname, './build/index.html'), { etag: false, lastModified: false });
+    res.sendFile(path.join(__dirname, '../build/index.html'), { etag: false, lastModified: false });
   } else {
     res.set('Cache-Control', 'max-age=31536000');
     next();
   }
 });
 
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, '../build')));
 
 app.get('*', (_, res) => {
   // Don't cache index.html
   res.set('Cache-Control', 'no-cache');
-  res.sendFile(path.join(__dirname, './build/index.html'), { etag: false, lastModified: false });
+  res.sendFile(path.join(__dirname, '../build/index.html'), { etag: false, lastModified: false });
 });
 
 server.listen(webSocketServerPort, () => {
