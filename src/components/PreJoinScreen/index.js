@@ -5,9 +5,7 @@ import { Typography, InputLabel, TextField, Grid, Button } from "@mui/material";
 import styles from './styles.module.css'
 
 export default function PreJoinScreen({roomName, setRoomName, handleSubmit}) {
-  const { isFetching } = useAppState();
-  const searchParams = new URLSearchParams(document.location.search);
-  const role = searchParams.get('role');
+  const { isFetching, ecRender } = useAppState();
   const formRef = useRef();
 
     const handleRoomNameChange = (event) => {
@@ -20,7 +18,7 @@ export default function PreJoinScreen({roomName, setRoomName, handleSubmit}) {
         }
     }, [roomName, setRoomName]);
 
-    if (role === process.env.REACT_APP_EC_NAME) {
+    if (ecRender) {
         return null;
     }
 

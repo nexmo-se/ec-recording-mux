@@ -42,6 +42,9 @@ const Participant = ({ participant }) => {
     };
   }, [participant, attachTrack, detachTrack]);
 
+  if (participant.displayName === process.env.REACT_APP_EC_NAME) 
+  return null;
+  
   return (
     <div className={styles.container}>
       <h2  className={styles.name}>{participant.displayName}</h2>

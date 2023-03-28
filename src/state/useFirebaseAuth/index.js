@@ -18,12 +18,12 @@ const firebaseConfig = {
 export default function useFirebaseAuth() {
   const [user, setUser] = useState(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
-  const searchParams = new URLSearchParams(document.location.search);
   const [isFetching, setIsFetching] = useState(false);
   const [muxInit, setMuxInit] = useState(null)
-  const [voangeArchive, setVonageArchive] = useState(null)
-
+  const [vonageArchive, setVonageArchive] = useState(null)
+  const searchParams = new URLSearchParams(document.location.search);
   const role = searchParams.get('role');
+  const ecRender = role === process.env.REACT_APP_EC_NAME ? role : null
 
   const initialize = useCallback(
     async (user_identity, roomName) => {
@@ -59,7 +59,7 @@ export default function useFirebaseAuth() {
           return credential;  
         }else throw new Error(response.statusText);
       }).catch((err) => {
-        console.err(err)
+        console.log(err)
       }).finally(()=> {
         setIsFetching(false)
       })
@@ -88,9 +88,11 @@ export default function useFirebaseAuth() {
           return;  
         }else throw new Error(response.statusText);
       }).catch((err) => {
-        console.err(err)
+        console.log(err)
       }).finally(()=> {
-        setIsFetching(false)
+        setTimeout(() => {
+          setIsFetching(false)
+        }, 5000);
       })
     },
     [user, muxInit]
@@ -117,9 +119,11 @@ export default function useFirebaseAuth() {
           return;  
         }else throw new Error(response.statusText);
       }).catch((err) => {
-        console.err(err)
+        console.log(err)
       }).finally(()=> {
-        setIsFetching(false)
+        setTimeout(() => {
+          setIsFetching(false)
+        }, 5000);
       })
     },
     [user, muxInit]
@@ -159,9 +163,11 @@ export default function useFirebaseAuth() {
         setVonageArchive(jsonResponse)
         return jsonResponse;
       }).catch((err) => {
-        console.err(err)
+        console.log(err)
       }).finally(()=> {
-        setIsFetching(false)
+        setTimeout(() => {
+          setIsFetching(false)
+        }, 5000);
       })
     },
     [user, muxInit]
@@ -169,7 +175,7 @@ export default function useFirebaseAuth() {
 
   const stopEcRecording = useCallback(
     async () => {
-      if (!voangeArchive) {
+      if (!vonageArchive) {
         alert('missing vonage archive information')
         return;
       }
@@ -185,7 +191,7 @@ export default function useFirebaseAuth() {
       return fetch(endpoint, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ ecId: voangeArchive.ecId, archiveId: voangeArchive.archiveId }),
+        body: JSON.stringify({ ecId: vonageArchive.ecId, archiveId: vonageArchive.archiveId }),
       }).then(async res => {
         const jsonResponse = await res.json();
 
@@ -199,16 +205,18 @@ export default function useFirebaseAuth() {
 
         return jsonResponse;
       }).catch((err) => {
-        console.err(err)
+        console.log(err)
       }).finally(()=> {
-        setIsFetching(false)
+        setTimeout(() => {
+          setIsFetching(false)
+        }, 5000);
       })
     },
-    [user, voangeArchive]
+    [user, vonageArchive]
   );
 
   const getVonageRecord = useCallback(
-    async (archiveId) => {
+    async () => {
       setIsFetching(true)
       const headers = new window.Headers();
 
@@ -216,8 +224,7 @@ export default function useFirebaseAuth() {
       headers.set('Authorization', idToken);
       headers.set('content-type', 'application/json');
 
-      const endpoint = (process.env.REACT_APP_VONAGE_RECORD_ENDPOINT || '/getVonageRecord') + '/' + archiveId;
-
+      const endpoint = `${apiUrl}getVonageRecord/${vonageArchive.archiveId}`;
       return fetch(endpoint, {
         method: 'GET',
         headers
@@ -225,12 +232,12 @@ export default function useFirebaseAuth() {
           const jsonResponse = await res.json()
           return jsonResponse.url
       }).catch((err) => {
-        console.err(err)
+        console.log(err)
       }).finally(()=> {
         setIsFetching(false)
       })
     },
-    [user]
+    [user, vonageArchive]
   );
 
   useEffect(() => {
@@ -242,7 +249,7 @@ export default function useFirebaseAuth() {
   }, []);
 
   const signIn = useCallback(() => {
-    if (role === process.env.REACT_APP_EC_NAME) {
+    if (ecRender) {
       return signInAnonymously(getAuth())
         .then((newUser) => {
           setUser(newUser.user);
@@ -255,7 +262,7 @@ export default function useFirebaseAuth() {
       setUser(newUser.user);
     }).catch((e) => console.log("error! ", e))
     ;
-  }, [role]);
+  }, [ecRender]);
 
   const signOut = useCallback(() => {
     return getAuth()
@@ -265,5 +272,5 @@ export default function useFirebaseAuth() {
       });
   }, []);
 
-  return { user, signIn, signOut, isAuthReady, isFetching, initialize, startRecording, stopRecording, startEcRecording, stopEcRecording, getVonageRecord };
+  return { user, ecRender, signIn, signOut, isAuthReady, isFetching, initialize, startRecording, stopRecording, startEcRecording, stopEcRecording, getVonageRecord };
 }

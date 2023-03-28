@@ -1,3 +1,4 @@
+const { ariaHidden } = require("@mui/material")
 const MuxAPI = require("../../api/mux")
 const VonageAPI = require("../../api/vonage")
 
@@ -55,7 +56,7 @@ class RoomListener{
                 res.status(201).end()
             }
             catch(e) {
-                console.log("start broadcast error ", e.response.data.error)
+                console.log("startMuxBroadcast error: ", e.response.data.error)
                 res.status(501).end()
             }
     }
@@ -73,7 +74,7 @@ class RoomListener{
             res.status(201).end()
         }
         catch(e) {
-            console.log("stop broadcast error error", e.response.data)
+            console.log("stopMuxBroadcast error: ", e.response.data)
             res.status(501).end()
         }
     }
@@ -125,7 +126,7 @@ class RoomListener{
                 res.status(500);
             }
           }catch(e) {
-            console.log("Error", e)
+            console.log("startEcRecording error: ", e)
             res.status(500).send({ message: e });
           }
     }
@@ -144,9 +145,24 @@ class RoomListener{
                 res.status(500);
             }
             } catch (e) {
-                console.log('error ', e)
+                console.log('stopEcRecording error: ', e)
                 res.status(500).send({ message: e });
             }
+    }
+
+    static async getVonageRecord(req, res) {
+        const archiveId = req.params.archiveId
+        try {
+            if (!archiveId) {
+            res.status(501);
+            }
+            const url = await VonageAPI.getVonageRecord(archiveId)
+            res.json({url})
+        }
+        catch (e) {
+            console.log('getVonageRecord error: ', e)
+            res.status(500).send({ message: e });
+        }
     }
 
 }

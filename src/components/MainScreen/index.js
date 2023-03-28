@@ -6,22 +6,18 @@ import MenuBar from "../MenuBar";
 import styles from './styles.module.css'
 import { Tooltip, Typography } from "@mui/material";
 import useWebsocket from "../../hooks/useWebsocket";
+import { useAppState } from "../../state";
 
 export default function MainScreen() {
     const [localParticipant, setLocalParticipant] = useState(null);
     const { room, participants, isRecording, isEcRecording } = useVideoContext();
-    const { initialize: initializeWebsocket, recordedUrl } = useWebsocket()
-    const searchParams = new URLSearchParams(document.location.search);
-    const role = searchParams.get('role');
+    const { ecRender } = useAppState
+    const { initialize: initializeWebsocket, recordedUrl, isWebsocketConnecting, websocket } = useWebsocket()
     const roomName = window.location.pathname.split('/').pop()
 
     const join = useCallback(async () => {
       // Join the Space
       let localParticipant = await room.join();
-
-      if (role === process.env.REACT_APP_EC_NAME) {
-        return;
-      }
        
       // Get and publish our local tracks
       let localTracks = await getUserMedia({
@@ -33,15 +29,20 @@ export default function MainScreen() {
 
       // Set the local participant so it will be rendered
       setLocalParticipant(localParticipant);
-   }, [room, role])
+   }, [room])
 
     useEffect(() => {
       if (room) {
         join()
+      }
+    }, [room, join])
+
+    useEffect(() => {
+      if (!ecRender && !websocket && !isWebsocketConnecting) {
         initializeWebsocket(roomName)
       }
-      // eslint-disable-next-line
-    }, [room, join])
+
+    }, [ecRender, roomName, initializeWebsocket, isWebsocketConnecting, websocket ])
 
     return(
         <div>

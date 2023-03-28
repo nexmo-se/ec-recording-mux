@@ -6,10 +6,8 @@ import { useAppState } from "../../state";
 
 export default function MainPage() {
     const { room, connect, vonageConnect } = useVideoContext();
-    const { initialize, user, isAuthReady } = useAppState();
+    const { initialize, user, isAuthReady, ecRender } = useAppState();
     const [roomName, setRoomName] = useState(window.location.pathname.split('/').pop());
-    const searchParams = new URLSearchParams(document.location.search);
-    const role = searchParams.get('role');
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -18,17 +16,17 @@ export default function MainPage() {
 
     const connectRoom = useCallback(async (username) => {
       const credential = await initialize(username ,roomName);
-      await connect(credential.spaceToken)
+      await connect(credential.spaceToken, username)
       await vonageConnect(credential.vonageApikey, credential.vonageSessionId, credential.vonageToken)
       window.history.replaceState(null, '', window.encodeURI(`/room/${roomName}${window.location.search || ''}`));
   
     },[roomName, connect, vonageConnect, initialize])
 
     useEffect(() => {
-      if (role === process.env.REACT_APP_EC_NAME && roomName && isAuthReady) {
-        connectRoom(role)
+      if (ecRender && roomName && isAuthReady) {
+        connectRoom(ecRender)
       }
-    }, [role, roomName, isAuthReady]);
+    }, [ecRender, roomName, isAuthReady]);
 
     return (
         <>

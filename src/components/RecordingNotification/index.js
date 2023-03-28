@@ -1,4 +1,4 @@
-import { IconButton, Snackbar } from "@mui/material";
+import { IconButton, Snackbar, Alert } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 
 export default function RecordingNotification({openNotification, setOpenNotification, message}) {
@@ -28,10 +28,13 @@ export default function RecordingNotification({openNotification, setOpenNotifica
             open={openNotification}
             autoHideDuration={6000}
             onClose={handleClose}
-            message={message}
             action={action}
             anchorOrigin={{ vertical:'top', horizontal: 'right' }}
-          />
+          >
+            <Alert onClose={handleClose} severity="info" sx={{ width: '100%' }}>
+              {message}
+            </Alert>
+          </Snackbar>
         </div>
       );
 }

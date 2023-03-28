@@ -10,8 +10,8 @@ import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined
 import RecordingNotification from "../RecordingNotification";
 
 export default function MenuBar({recordedUrl}) {
-    const { isRecording, isEcRecording } = useVideoContext();
-    const {signOut, startRecording, stopRecording, startEcRecording, stopEcRecording, isFetching } = useAppState();
+    const { isRecording, isEcRecording, isVonageVideoAvailable } = useVideoContext();
+    const {signOut, startRecording, stopRecording, startEcRecording, stopEcRecording, isFetching, getVonageRecord } = useAppState();
     const [anchorEl, setAnchorEl] = useState(null);
     const [openNotification, setOpenNotification] = useState(false)
     const [notificationMessage, setNotificationMessage] = useState('')
@@ -33,7 +33,7 @@ export default function MenuBar({recordedUrl}) {
     const muxRecording = useCallback(() => {
         if (isRecording) {
             stopRecording();
-            setNotificationMessage('Recording Stopped')
+            setNotificationMessage('Recording Stopped, You may download the recording from the Settings within 5 seconds.')
             setOpenNotification(true)
         }
         else {
@@ -48,7 +48,7 @@ export default function MenuBar({recordedUrl}) {
     const ecRecording = useCallback(async () => {
         if (isEcRecording) {
             stopEcRecording();
-            setNotificationMessage('Ec Recording Stopped')
+            setNotificationMessage('Ec Recording Stopped, You may download the recording from the Settings within 5 seconds.')
             setOpenNotification(true)
         }
         else {
@@ -75,6 +75,13 @@ export default function MenuBar({recordedUrl}) {
         window.URL.revokeObjectURL(url);
         handleClose();
     }
+
+    async function downloadVonageRecord() {
+          const url = await getVonageRecord()
+          if (typeof url === 'string') {
+            downloadRecord(url)
+          }
+    }
     
     return (
         <>
@@ -99,7 +106,7 @@ export default function MenuBar({recordedUrl}) {
                 'aria-labelledby': 'basic-button',
                 }}>
                 <MenuList>
-                    { !isEcRecording && (
+                    {!isEcRecording && (
                         <MenuItem onClick={muxRecording} disabled={isFetching}>
                             <ListItemIcon>
                                 {isRecording ? <StopRecordingIcon/> : <StartRecordingIcon />}
@@ -107,7 +114,7 @@ export default function MenuBar({recordedUrl}) {
                             <ListItemText>{isRecording ? 'Stop' : 'Start'} Recording</ListItemText>
                         </MenuItem>
                     )}
-                    { !isRecording && (
+                    {!isRecording && (
                         <MenuItem onClick={ecRecording} disabled={isFetching}>
                             <ListItemIcon>
                                 <StartRecordingIcon />
@@ -123,6 +130,16 @@ export default function MenuBar({recordedUrl}) {
                             </ListItemIcon>
                             <ListItemText>Download Record</ListItemText>
                         </MenuItem>
+                    )
+                    }
+                    {
+                    isVonageVideoAvailable && (
+                        <MenuItem onClick={() => downloadVonageRecord()} disabled={isFetching}>
+                        <ListItemIcon>
+                            <CloudDownloadOutlinedIcon/>
+                        </ListItemIcon>
+                        <ListItemText>Download Vonage Record</ListItemText>
+                    </MenuItem>
                     )
                     }
                     <Divider />

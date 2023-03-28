@@ -46,7 +46,7 @@ class VonageAPI {
         const response = await axios.post(`https://api.opentok.com/v2/project/${process.env.VONAGE_API_KEY}/render`, {
           "sessionId": sessionId,
           "token": token,
-          "url": url,
+          "url": `${url}?role=${process.env.REACT_APP_EC_NAME}`,
           "maxDuration": 1800,
           "resolution": "1280x720",
           "properties": {
@@ -92,6 +92,14 @@ class VonageAPI {
         })
     }
 
+    static async getVonageRecord(archiveId) {
+      return new Promise((res, rej) => {
+        opentok.getArchive(archiveId, function (err, archive) {
+        if (err) rej(err.message);
+        res(archive.url)
+      });
+    })
+  }
 }
 
 module.exports = VonageAPI

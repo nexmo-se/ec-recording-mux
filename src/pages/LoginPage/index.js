@@ -7,11 +7,9 @@ import styles from './styles.module.css'
 import { useCallback, useEffect } from 'react';
 
 export default function LoginPage() {
-    const { signIn, user, isAuthReady } = useAppState();
+    const { signIn, user, isAuthReady, ecRender } = useAppState();
     const navigate = useNavigate();
     const location = useLocation();
-    const searchParams = new URLSearchParams(document.location.search);
-    const role = searchParams.get('role');
 
     const login = useCallback(() => {
         signIn()
@@ -22,16 +20,16 @@ export default function LoginPage() {
             // Go back to previous url
             navigate(location?.state?.from || { pathname: '/' })
         }
-    }, [user, navigate])
+    }, [user, navigate, location])
 
     useEffect(() => {
-        if (role === process.env.REACT_APP_EC_NAME) {
+        if (ecRender) {
           login()
         }
-      }, [role, login])
+      }, [ecRender, login])
     
 
-    if (!isAuthReady || role === process.env.REACT_APP_EC_NAME) {
+    if (!isAuthReady || ecRender) {
         return null;
     }
 

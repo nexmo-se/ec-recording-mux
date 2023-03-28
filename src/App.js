@@ -1,4 +1,5 @@
 
+import { useEffect, useCallback } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import AppStateProvider from './state';
 import { VideoProvider } from './components/VideoProvider';
@@ -7,22 +8,22 @@ import LoginPage from './pages/LoginPage';
 import MainPage from './pages/MainPage';
 import { useAppState } from './state';
 import "./App.css";
-import { useEffect } from 'react';
 
 const VideoApp = () => {
-  const { error, setError } = useAppState();
-  const { isAuthReady, user } = useAppState();
+  const { error, setError, isAuthReady, user, ecRender } = useAppState();
   const location = useLocation();
   const navigate = useNavigate();
-  const searchParams = new URLSearchParams(document.location.search);
-  const role = searchParams.get('role');
+
+  const toLoginPage = useCallback(() => {
+    const loginUrl = `/login${ecRender ? window.location.search : ''}`
+    navigate(loginUrl, { state: { from: location } });
+  }, [navigate, ecRender, location])
 
   useEffect(() => {
     if (!user || !isAuthReady) {
-      const loginUrl = `/login${role === process.env.REACT_APP_EC_NAME ? window.location.search : ''}`
-      navigate(loginUrl, { state: { from: location } });
+      toLoginPage()
     }
-  }, [isAuthReady, user, navigate])
+  }, [isAuthReady, user, toLoginPage])
 
   return (
     <VideoProvider onError={setError}>

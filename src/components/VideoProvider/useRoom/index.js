@@ -1,7 +1,6 @@
 import { Space, SpaceEvent } from "@mux/spaces-web";
 import OT from '@opentok/client';
 import { useState, useEffect, useCallback } from "react";
-import { useAppState } from "../../../state";
 
 export default function useRoom(onError) {
     const [ room, setRoom] = useState(null);
@@ -13,20 +12,17 @@ export default function useRoom(onError) {
     const [ isEcRecording, setIsEcRecording ] = useState(false)
     const [ isVonageVideoAvailable, setIsVonageVideoAvailable ] = useState(false)
 
-
-    const { user } = useAppState()
-
-    const connect = useCallback(
-      (token) => {
+    const connect = (token, username) => {
+      if (isConnecting || room) return;
         setIsConnecting(true);
-        const space = new Space(token, {displayName: user.displayName})
+        const space = new Space(token, {displayName: username})
         setRoom(space)
         setIsConnecting(false);
-      },
-      [user]
-    );
+    }
+
 
     const vonageConnect = (apiKey, sessionId, token) => {
+      if (isVonageConnecting || vonageSession) return;
       setIsVonageConnecting(true);
       var session = OT.initSession(apiKey, sessionId);
       session.connect(token, function(error) {
@@ -93,7 +89,9 @@ export default function useRoom(onError) {
 
     const handleEcRecordingStopped = useCallback(() => {
       setIsEcRecording(false)
-      setIsVonageVideoAvailable(true)
+      setTimeout(() => {
+        setIsVonageVideoAvailable(true); // Ensure video is uploaded
+      }, 5000);
     }, [setIsEcRecording, setIsVonageVideoAvailable])
 
     useEffect(() => {
