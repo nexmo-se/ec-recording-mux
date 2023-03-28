@@ -1,5 +1,7 @@
 .container {
     position: relative;
+    width: var(--width);
+    height: var(--height);
 }
 .container.isLocal {
     display: inline-block;
@@ -21,8 +23,8 @@
 }
 
 .video {
-    width: 85%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     border-radius: 48px;
-    border: 2px solid white;
 }
