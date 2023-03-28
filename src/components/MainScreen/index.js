@@ -85,7 +85,7 @@ export default function MainScreen() {
                 <div className={styles.recordingIndicator}>
                   <div className={styles.circle}></div>
                   <Typography variant="body1" color="inherit" data-cy-recording-indicator>
-                    Ec Recording
+                    EC Recording
                   </Typography>
                 </div>
               </Tooltip>

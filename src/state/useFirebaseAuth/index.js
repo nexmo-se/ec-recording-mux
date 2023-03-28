@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signInAnonymously } from 'firebase/auth';
 import Credential from '../../entities/Credential'
 
-const apiUrl = process.env.REACT_APP_BACKEND_URL || ''
+const apiUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -35,7 +35,7 @@ export default function useFirebaseAuth() {
       headers.set('Authorization', idToken);
       headers.set('content-type', 'application/json');
 
-      const endpoint = `${apiUrl}initialize`;
+      const endpoint = `${apiUrl}/initialize`;
 
       return fetch(endpoint, {
         method: 'POST',
@@ -77,7 +77,7 @@ export default function useFirebaseAuth() {
       headers.set('Authorization', idToken);
       headers.set('content-type', 'application/json');
 
-      const endpoint = `${apiUrl}startRecording`;
+      const endpoint = `${apiUrl}/startRecording`;
 
       return fetch(endpoint, {
         method: 'POST',
@@ -108,7 +108,7 @@ export default function useFirebaseAuth() {
       headers.set('Authorization', idToken);
       headers.set('content-type', 'application/json');
 
-      const endpoint = `${apiUrl}stopRecording`;
+      const endpoint = `${apiUrl}/stopRecording`;
 
       return fetch(endpoint, {
         method: 'POST',
@@ -143,7 +143,7 @@ export default function useFirebaseAuth() {
       headers.set('Authorization', idToken);
       headers.set('content-type', 'application/json');
 
-      const endpoint = `${apiUrl}ecStartRecording`;
+      const endpoint = `${apiUrl}/ecStartRecording`;
 
       return fetch(endpoint, {
         method: 'POST',
@@ -186,7 +186,7 @@ export default function useFirebaseAuth() {
       headers.set('Authorization', idToken);
       headers.set('content-type', 'application/json');
 
-      const endpoint = `${apiUrl}ecStopRecording`;
+      const endpoint = `${apiUrl}/ecStopRecording`;
 
       return fetch(endpoint, {
         method: 'POST',
@@ -224,7 +224,7 @@ export default function useFirebaseAuth() {
       headers.set('Authorization', idToken);
       headers.set('content-type', 'application/json');
 
-      const endpoint = `${apiUrl}getVonageRecord/${vonageArchive.archiveId}`;
+      const endpoint = `${apiUrl}/getVonageRecord/${vonageArchive.archiveId}`;
       return fetch(endpoint, {
         method: 'GET',
         headers
