@@ -73,7 +73,7 @@ class VonageAPI {
 
     static async startArchive(sessionId) {
         return new Promise((res, rej) => {
-            opentok.startArchive(sessionId, { name: "EC Recording" }, function (err, archive) {
+            opentok.startArchive(sessionId, { name: "EC Recording", resolution: "1280x720" }, function (err, archive) {
               if (err) {
                 rej(err.message);
               } else {
