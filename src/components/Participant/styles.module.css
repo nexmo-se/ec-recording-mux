@@ -8,13 +8,14 @@
     position: absolute;
     bottom: 0px;
     left: 0px;
-    font-size: 16px;
+    font-size: 22px;
     color: white;
     display: block;
     width: calc(100% - 16px);
     margin: 0px;
     padding: 8px;
-    background-color: rgb(0, 0, 0, 0.3);
+    background-color: rgb(0, 0, 0, 0.7);
+    text-align: center;
 }
 
 .name {
