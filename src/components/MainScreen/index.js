@@ -44,10 +44,6 @@ export default function MainScreen() {
 
     }, [ecRender, roomName, initializeWebsocket, isWebsocketConnecting, websocket ])
 
-useEffect(() => {
-  console.log("active speaker" , activeSpeaker)
-}, [activeSpeaker])
-
     return(
         <div>
           <h4 className={styles.roomTitle}>Space: {roomName}</h4>

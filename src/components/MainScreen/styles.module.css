@@ -6,7 +6,7 @@
 }
 .mainContainer {
   width: 100vw;
-  height: calc(100vh - 140px);
+  height: calc(100vh - 160px);
 }
 
 .sideContainer {
@@ -14,7 +14,13 @@
   top: 64px;
   right: 24px;
   overflow-y: scroll;
-  height: calc(100vh - 140px)
+  height: calc(100vh - 160px);
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.sideContainer::-webkit-scrollbar {
+  display: none;
 }
     
 .sideContainer > div {
