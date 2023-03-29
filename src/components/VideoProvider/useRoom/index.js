@@ -7,6 +7,7 @@ export default function useRoom(onError) {
     const [ isConnecting, setIsConnecting] = useState(false);
     const [ isVonageConnecting, setIsVonageConnecting] = useState(false);
     const [ participants, setParticipants] = useState([])
+    const [ activeSpeaker, setActiveSpeaker] = useState(null)
     const [ isRecording, setIsRecording ] = useState(false)
     const [ vonageSession, setVonageSession] = useState(null)
     const [ isEcRecording, setIsEcRecording ] = useState(false)
@@ -66,20 +67,47 @@ export default function useRoom(onError) {
       [setIsRecording]
     );
 
+    const updateActiveSpeaker = useCallback(
+      (activeSpeakers) => {
+        const participantsIds = participants.map((participants) => participants.id)
+        const participantsActiveSpeaker = activeSpeakers.filter((activeSpeaker) => participantsIds.includes(activeSpeaker.participant.id))
+        if (participantsActiveSpeaker.length > 0) {
+          setActiveSpeaker(participantsActiveSpeaker[0].participant)
+        }
+      },
+      [setActiveSpeaker, participants]
+    )
+
+    useEffect(() => {
+      if (participants.length === 0) {
+        setActiveSpeaker(null)
+        return;
+      }
+      const participantsIds = participants.map((participants) => participants.id)
+
+      if (!activeSpeaker || !participantsIds.includes(activeSpeaker.id)) {
+        setActiveSpeaker(participants[0])
+      }
+
+    }, [participants, activeSpeaker])
+
+
     useEffect(() => {
       if (room) {        
           room.on(SpaceEvent.ParticipantJoined, addParticipant);
+          room.on(SpaceEvent.ActiveSpeakersChanged, updateActiveSpeaker);
           room.on(SpaceEvent.ParticipantLeft, removeParticipant);
           room.on(SpaceEvent.BroadcastStateChanged, updateRecordingState);
       
           return () => {
+            room.off(SpaceEvent.ActiveSpeakersChanged, updateActiveSpeaker);
             room.off(SpaceEvent.ParticipantJoined, addParticipant);
             room.off(SpaceEvent.ParticipantLeft, removeParticipant);
             room.off(SpaceEvent.BroadcastStateChanged, updateRecordingState);
           };
       }
 
-    }, [room, addParticipant, removeParticipant, updateRecordingState])
+    }, [room, addParticipant, removeParticipant, updateRecordingState, updateActiveSpeaker])
 
 
     const handleEcRecordingStarted = useCallback(() => {
@@ -118,5 +146,6 @@ export default function useRoom(onError) {
       vonageConnect,
       vonageSession,
       isEcRecording,
-      isVonageVideoAvailable };
+      isVonageVideoAvailable,
+      activeSpeaker };
   }

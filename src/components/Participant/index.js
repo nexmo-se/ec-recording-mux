@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { LocalParticipant, ParticipantEvent, TrackSource,} from "@mux/spaces-web";
 import styles from './styles.module.css';
 
-const Participant = ({ participant }) => {
+const Participant = ({ participant, isActiveSpeaker=false }) => {
   const mediaEl = useRef(null);
   const isLocal = participant instanceof LocalParticipant;
 
@@ -46,7 +46,7 @@ const Participant = ({ participant }) => {
   return null;
   
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${isActiveSpeaker ? styles.isActiveSpeaker : ''}`}>
       <h2  className={styles.name}>{participant.displayName}</h2>
       <video
         ref={mediaEl}

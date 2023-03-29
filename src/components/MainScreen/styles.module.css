@@ -4,18 +4,27 @@
     padding: 8px 12px;
     margin: 0 0 16px 0;
 }
+.mainContainer {
+  width: 100vw;
+  height: calc(100vh - 140px);
+}
 
-.gridContainer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  max-width: calc(var(--width) * var(--cols));
-  margin: 0 auto
+.sideContainer {
+  position: absolute;
+  top: 64px;
+  right: 24px;
+  overflow-y: scroll;
+  height: calc(100vh - 140px)
 }
     
-.gridContainer > div {
+.sideContainer > div {
     text-align: center;
     padding: 0;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 2px solid white;
+    margin: 24px;
 }
 
 .recordingIndicator {
