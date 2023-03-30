@@ -21,6 +21,7 @@ The Video app has the following features:
 
 ## Notes
 1. Mux doesn't provide Recording API, but their Broadcast API will broadcast the conference with a fix layout (default: landscape gallery) and record the broadcast stream automatically
+
 For more info: visit [Mux Broadcast](https://docs.mux.com/guides/video/broadcast-real-time-video-to-a-live-stream)
 
 ## Running locally
