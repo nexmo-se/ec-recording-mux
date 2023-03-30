@@ -1,70 +1,68 @@
-# Getting Started with Create React App
+# Mux Multi-party Video React App + Vonage Experience Composer Archiving
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## What is it
 
-## Available Scripts
+This application demonstrates integration of Vonage Experience Composer Archiving into Mux multi-party video application.
 
-In the project directory, you can run:
+Mux application is created based on:
+1. Backend: [Mux Video API](https://docs.mux.com/guides/video/build-real-time-video-experiences)
+2. Frontend [Mux Spaces SDK](https://spaces-js-docs.mux.dev/)
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+The Video app has the following features:
+- [x] Video conferencing with real-time video and audio
+- [x] Enable/disable camera
+- [x] Mute/unmute mic
+- [x] Start and stop Recording with the [Mux Broadcast](https://docs.mux.com/guides/video/broadcast-real-time-video-to-a-live-stream)
+- [x] Start and stop Vonage Experience Composer Archiving with the [Vonage Experience Composer](https://tokbox.com/developer/guides/experience-composer/) and [Vonage Archiving](https://tokbox.com/developer/guides/archiving/)
+- [x] Download recorded videos
+- [x] Download Vonage archive video
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Notes
+1. Mux doesn't provide Recording API, but their Broadcast API will broadcast the conference with a fix layout (default: landscape gallery) and record the broadcast stream automatically
+For more info: visit [Mux Broadcast](https://docs.mux.com/guides/video/broadcast-real-time-video-to-a-live-stream)
 
-### `npm test`
+## Running locally
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Clone the repo
+2. Run `npm install` or `yarn install` install the dependencies in the root directory and /server directory
+3. Copy .env.example to .env and fill in the variables.
+4. Run `npm run build`
+5. Run `npm run server`
+6. Open browser `localhost:3002`
 
-### `npm run build`
+Mux variables: [Mux Dashboard](https://dashboard.mux.com/)
+- Mux token id and secret: Settings -> Access Tokens -> Generate new token (Mux Video enable)
+- Mux signing key and private key: Settings -> Signing Keys -> Generate new key
+- Mux Webhook secret: Settings -> Webhooks -> create new webhook -> add your target webhook with endpoint /muxEvent -> Show Signing Secret 
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    ```
+    MUX_TOKEN_ID = 
+    MUX_TOKEN_SECRET = 
+    MUX_SIGNING_KEY = 
+    MUX_PRIVATE_KEY = 
+    MUX_WEBHOOK_SECRET =
+    ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Vonage variables: [Vonage Account](https://tokbox.com/account/#/)
+- Vonage API Key/Secret: Projects -> create new project -> get the values from the project you have created
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    ```
+    VONAGE_API_KEY =
+    VONAGE_API_SECRET =
+    ```
 
-### `npm run eject`
+Firebase Auth variables:
+- Follow the instructions in [Firebase Auth](https://firebase.google.com/docs/auth) 
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    ```
+    REACT_APP_FIREBASE_API_KEY = 
+    REACT_APP_FIREBASE_AUTH_DOMAIN = 
+    REACT_APP_FIREBASE_DATABASE_URL = 
+    REACT_APP_FIREBASE_STORAGE_BUCKET = 
+    REACT_APP_FIREBASE_MESSAGING_SENDER_ID = 
+    REACT_APP_FIREBASE_APP_ID =  
+    REACT_APP_FIREBASE_MEASUREMENT_ID = 
+    GOOGLE_CREDS =
+    ```
