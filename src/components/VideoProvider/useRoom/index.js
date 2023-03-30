@@ -1,4 +1,4 @@
-import { Space, SpaceEvent } from "@mux/spaces-web";
+import { Space, SpaceEvent, LocalParticipant } from "@mux/spaces-web";
 import OT from '@opentok/client';
 import { useState, useEffect, useCallback } from "react";
 
@@ -12,6 +12,7 @@ export default function useRoom(onError) {
     const [ vonageSession, setVonageSession] = useState(null)
     const [ isEcRecording, setIsEcRecording ] = useState(false)
     const [ isVonageVideoAvailable, setIsVonageVideoAvailable ] = useState(false)
+    const [ recordedArchiveId, setRecordedArchiveId ] = useState(null)
 
     const connect = (token, username) => {
       if (isConnecting || room) return;
@@ -69,13 +70,12 @@ export default function useRoom(onError) {
 
     const updateActiveSpeaker = useCallback(
       (activeSpeakers) => {
-        const participantsIds = participants.map((participants) => participants.id)
-        const participantsActiveSpeaker = activeSpeakers.filter((activeSpeaker) => participantsIds.includes(activeSpeaker.participant.id))
+        const participantsActiveSpeaker = activeSpeakers.filter((activeSpeaker) =>  !(activeSpeaker.participant instanceof LocalParticipant))
         if (participantsActiveSpeaker.length > 0) {
           setActiveSpeaker(participantsActiveSpeaker[0].participant)
         }
       },
-      [setActiveSpeaker, participants]
+      [setActiveSpeaker]
     )
 
     useEffect(() => {
@@ -115,8 +115,9 @@ export default function useRoom(onError) {
       setIsEcRecording(true)
     }, [setIsEcRecording])
 
-    const handleEcRecordingStopped = useCallback(() => {
+    const handleEcRecordingStopped = useCallback((archive) => {
       setIsEcRecording(false)
+      setRecordedArchiveId(archive.id)
       setTimeout(() => {
         setIsVonageVideoAvailable(true); // Ensure video is uploaded
       }, 5000);
@@ -135,7 +136,6 @@ export default function useRoom(onError) {
     }, [vonageSession, handleEcRecordingStarted, handleEcRecordingStopped]);
 
 
-  
     return { 
       room, 
       isConnecting, 
@@ -147,5 +147,6 @@ export default function useRoom(onError) {
       vonageSession,
       isEcRecording,
       isVonageVideoAvailable,
-      activeSpeaker };
+      activeSpeaker, 
+      recordedArchiveId };
   }

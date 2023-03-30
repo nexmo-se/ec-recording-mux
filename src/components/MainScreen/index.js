@@ -78,7 +78,7 @@ export default function MainScreen() {
             </div>
             {isRecording && (
               <Tooltip
-                title="All participants' audio and video is currently being recorded. Visit the app settings to stop recording."
+                title="All participants' audio and video is currently being recorded. Visit the app menu to stop recording."
                 placement="top"
               >
                 <div className={styles.recordingIndicator}>
@@ -91,7 +91,7 @@ export default function MainScreen() {
             )}
             {isEcRecording && (
               <Tooltip
-                title="All participants' audio and video is currently being recorded. Visit the app settings to stop recording."
+                title="All participants' audio and video is currently being recorded. Visit the app menu to stop recording."
                 placement="top"
               >
                 <div className={styles.recordingIndicator}>
@@ -104,6 +104,7 @@ export default function MainScreen() {
             )}
             <MenuBar
               recordedUrl={recordedUrl}
+              localParticipant={localParticipant}
             ></MenuBar>
         </div>
     )

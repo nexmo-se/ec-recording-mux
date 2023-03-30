@@ -1,7 +1,13 @@
 .menuBar {
     position: absolute;
-    bottom: 32px;
-    left: 16px;
-    background-color: rgb(0, 0, 0, 0.3);
-    width: calc(100% - 32px);
+    bottom: 0px;
+    left: 0px;
+    background-color: white;
+    width: calc(100%);
+    text-align: center;
+    padding: 16px 0px;
+}
+
+.menuBar button {
+    margin-right: 48px;
 }

@@ -203,6 +203,7 @@ export default function useFirebaseAuth() {
           return Promise.reject(recordingError);
         }
 
+        setVonageArchive(null)
         return jsonResponse;
       }).catch((err) => {
         console.log(err)
@@ -216,7 +217,7 @@ export default function useFirebaseAuth() {
   );
 
   const getVonageRecord = useCallback(
-    async () => {
+    async (archiveId) => {
       setIsFetching(true)
       const headers = new window.Headers();
 
@@ -224,7 +225,7 @@ export default function useFirebaseAuth() {
       headers.set('Authorization', idToken);
       headers.set('content-type', 'application/json');
 
-      const endpoint = `${apiUrl}/getVonageRecord/${vonageArchive.archiveId}`;
+      const endpoint = `${apiUrl}/getVonageRecord/${archiveId}`;
       return fetch(endpoint, {
         method: 'GET',
         headers
@@ -237,7 +238,7 @@ export default function useFirebaseAuth() {
         setIsFetching(false)
       })
     },
-    [user, vonageArchive]
+    [user]
   );
 
   useEffect(() => {
@@ -272,5 +273,5 @@ export default function useFirebaseAuth() {
       });
   }, []);
 
-  return { user, ecRender, signIn, signOut, isAuthReady, isFetching, initialize, startRecording, stopRecording, startEcRecording, stopEcRecording, getVonageRecord };
+  return { user, ecRender, signIn, signOut, isAuthReady, isFetching, vonageArchive, initialize, startRecording, stopRecording, startEcRecording, stopEcRecording, getVonageRecord };
 }

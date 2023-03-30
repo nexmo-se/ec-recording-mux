@@ -38,7 +38,7 @@ export default function LoginPage() {
             <Typography variant="h5" className={styles.gutterBottom}>
                 Sign in to join a room
             </Typography>
-            <Typography variant="body1">Sign in using your Google Account</Typography>
+            <Typography variant="body1">Sign in using your Google/Vonage Account</Typography>
             <Button variant="contained" id={styles.googleButton} onClick={login} startIcon={<GoogleLogo />}>
                 Sign in with Google
             </Button>

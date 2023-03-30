@@ -23,7 +23,8 @@ export function VideoProvider({children, onError = () => {} }) {
     vonageSession,
     isEcRecording,
     isVonageVideoAvailable,
-    activeSpeaker  } = useRoom(onErrorCallback);
+    activeSpeaker,
+    recordedArchiveId  } = useRoom(onErrorCallback);
 
   return (
     <VideoContext.Provider
@@ -39,7 +40,8 @@ export function VideoProvider({children, onError = () => {} }) {
         vonageSession,
         isEcRecording,
         isVonageVideoAvailable,
-        activeSpeaker
+        activeSpeaker,
+        recordedArchiveId
       }}
     >
         {children}
