@@ -8,7 +8,7 @@ const app = express()
 app.use(express.json());
 app.use(cors())
 
-const webSocketServerPort = process.env.PORT || 3002;
+const webSocketServerPort = process.env.NERU_APP_PORT || process.env.PORT || 8081;
 const webSocketServer = require('websocket').server;
 const http = require('http');
 
@@ -41,6 +41,10 @@ wsServer.on('request', function(request) {
     clients[room] = [connection]
   }
 })
+
+app.get('/_/health', async (req, res) => {
+  res.sendStatus(200);
+});
 
 app.post('/initialize', firebaseAuthMiddleware, RoomListener.initialize)
 

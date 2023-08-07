@@ -1,0 +1,36 @@
+project:
+  name: mux-ec-recording
+instance:
+  name: dev
+  runtime: nodejs16
+  region:
+  application-id:
+  entrypoint:
+    - npm
+    - run
+    - server
+  environment:
+    - name: GOOGLE_CREDS
+      value:
+    - name: MUX_TOKEN_ID
+      value:
+    - name: MUX_TOKEN_SECRET
+      value:
+    - name: MUX_SIGNING_KEY
+      value:
+    - name: MUX_PRIVATE_KEY
+      value:
+    - name: MUX_WEBHOOK_SECRET
+      value:
+    - name: VONAGE_API_KEY
+      value:
+    - name: VONAGE_API_SECRET
+      value:
+    - name: REACT_APP_EC_NAME
+      value:
+debug:
+  name: debug
+  entrypoint:
+    - npm
+    - run
+    - server
